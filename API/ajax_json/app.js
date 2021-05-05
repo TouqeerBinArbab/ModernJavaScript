@@ -1,49 +1,64 @@
-document.getElementById("button").addEventListener("click", loadData);
+document.getElementById("button1").addEventListener("click", loadCustomer);
 
-function loadData() {
+document.getElementById("button2").addEventListener("click", loadCustomers);
+
+// For Single Customer
+function loadCustomer() {
   const xhr = new XMLHttpRequest();
-
-  //OPEN
-
-  xhr.open("GET", "data.txt", true);
-
-  // console.log(xhr.readyState);
-
-  // Optional - Used for Spinners/Loaders
-
-  xhr.onprogress = function () {
-    console.log(xhr.readyState);
-  };
+  xhr.open("GET", "customer.json", true);
 
   xhr.onload = function () {
     if (this.status === 200) {
-      
-      document.getElementById('output').innerHTML = `<h1>${this.responseText}</h1>`
+      console.log(this.responseText);
+      const customer = JSON.parse(this.responseText);
+      console.log(customer);
+
+      const output = `
+      <ul>
+      <li>Id: ${customer.id}</li>
+      <li>Name: ${customer.name}</li>
+      <li>Company: ${customer.company}</li>
+      <li>Phone: ${customer.phone}</li>
+      </ul>`;
+      document.getElementById("customer").innerHTML = output;
     }
   };
 
-  xhr.onerror = function(){
-    console.log('Request error... ')
-  }
-
-  // xhr.onreadystatechange = function () {
-  //   console.log(xhr.readyState);
-  //   if (this.status === 200 && this.readyState === 4) {
-  //     console.log(this.responseText);
-  //   }
-  // };
+  xhr.onerror = function () {
+    console.log("Request error... ");
+  };
 
   xhr.send();
+}
 
-  // readyState Values
-  // 0: request not initialized
-  // 1: server connection established
-  // 2: request recieved
-  // 3: processing request
-  // 4: request finished and response is ready
+// For Customers
+function loadCustomers() {
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "customers.json", true);
 
-  // HTTP statuses
-  // 200: "OK"
-  // 403: "Forbidden"
-  // 404: "Not Found"
+  xhr.onload = function () {
+    if (this.status === 200) {
+      console.log(this.responseText);
+      const customers = JSON.parse(this.responseText);
+      console.log(customers);
+      let output = "";
+      customers.forEach(function (customer) {
+        output += `
+        <ul>
+        <li>Id: ${customer.id}</li>
+        <li>Name: ${customer.name}</li>
+        <li>Company: ${customer.company}</li>
+        <li>Phone: ${customer.phone}</li>
+        </ul>`;
+      });
+
+      document.getElementById("customers").innerHTML = output;
+    }
+  };
+
+  xhr.onerror = function () {
+    console.log("Request error... ");
+  };
+
+  xhr.send();
 }
