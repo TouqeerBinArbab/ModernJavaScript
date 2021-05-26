@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      var __globalUrl = {};
+
+      function removeCharAt(str, i) {
+        try {
+          let tmp = str.split("");
+          tmp.splice(i - 1, 1);
+          return tmp.join("");
+        } catch (e) {
+          let tmp = str.split("");
+          tmp.slice(0, str.length - 1);
+          return tmp.join("");
+        }
+      }
+      async function callApi(method, url, body) {
+        let generateRandom = () => {
+          let random = Math.random().toString(36);
+          let lastNum = random.substring(random.length - 1);
+          return lastNum;
+        };
+        let encodedMethod = btoa(method);
+        const methodfirst = generateRandom();
+        let encoded =
+          encodedMethod.slice(0, 8) + methodfirst + encodedMethod.slice(8);
+        const methodLast = generateRandom();
+        let fnlMethodEconded =
+          encoded.slice(0, encoded.length - 1) +
+          methodLast +
+          encoded.slice(encoded.length - 1);
+        let encodedUrl = btoa(url);
+        const urlfirst = generateRandom();
+        let urlEncoded =
+          encodedUrl.slice(0, 8) + urlfirst + encodedUrl.slice(8);
+        const urlLast = generateRandom();
+        let fnlUrlEconded =
+          urlEncoded.slice(0, urlEncoded.length - 1) +
+          urlLast +
+          urlEncoded.slice(urlEncoded.length - 1);
+        let encodedBody = btoa(JSON.stringify(body));
+        const bodyfirst = generateRandom();
+        let bodyEncoded =
+          encodedBody.slice(0, 8) + bodyfirst + encodedBody.slice(8);
+        const bodyLast = generateRandom();
+        let fnlBodyEconded =
+          bodyEncoded.slice(0, bodyEncoded.length - 1) +
+          bodyLast +
+          bodyEncoded.slice(bodyEncoded.length - 1);
+        let encodedApi = {
+          bjasdbjhabsdh: `${fnlMethodEconded}`,
+          bjashdjbha: `${fnlUrlEconded}`,
+          klnaskldmnklajs: `${fnlBodyEconded}`,
+          nasjkdn: "W10=aa",
+        };
+        let response = await $.post(
+          `http://srv-01.muber.global/api/_query`,
+          encodedApi,
+        );
+        let data = response;
+        if (data.length >= 9) {
+          data = removeCharAt(data, 9);
+          data = removeCharAt(data, data.length - 1);
+        } else {
+          data = removeCharAt(data, data.length);
+          data = removeCharAt(data, data.length);
+        }
+        let v = { data: JSON.parse(atob(data)) };
+        return v;
+      }
+
+      function getUrlVars() {
+        var vars = [],
+          hash;
+        var hashes = window.location.href
+          .slice(window.location.href.indexOf("?") + 1)
+          .split("&");
+        for (var i = 0; i < hashes.length; i++) {
+          hash = hashes[i].split("=");
+          vars.push(hash[0]);
+          vars[hash[0]] = hash[1];
+        }
+        return vars;
+      }
+      $(document).ready(function () {
+        //loading foree
+        __globalUrl = getUrlVars();
+        if (
+          __globalUrl["userId"] == null ||
+          __globalUrl["userId"] == undefined
+        ) {
+          document.write("Unauthenticated user");
+          window.ReactNativeWebView.postMessage({
+            success: false,
+            referenceNumber: null,
+          });
+          return;
+        }
+        var script = document.createElement("script");
+        script.src =
+          __globalUrl["isProd"] == "true"
+            ? "https://checkout.foree.co/checkout.js"
+            : "https://checkout-sandbox.riteidentity.com/checkout.js";
+        document.body.appendChild(script);
+        //requesting transaction information
+        var request = {
+          data: {
+            amount: __globalUrl["amount"],
+            userId: __globalUrl["userId"],
+            createdBy: __globalUrl["createdBy"],
+            type: __globalUrl["type"],
+            slots: __globalUrl["slots"],
+            transactionCode: __globalUrl["transactionCode"],
+            paymentType: __globalUrl["paymentType"],
+          },
+        };
+
+        callApi(
+          "post",
+          `${__globalUrl["url"]}TransactionLogs/RequestTransaction`,
+          request,
+        ).then((res) => {
+         
+            let response = res.data.result
+            console.log('res >>>',response)
+            if (response.success == 1) {
+              setTimeout(() => {
+                showCheckoutPopup(
+                  response.apiKey,
+                  response.amount,
+                  response.generated,
+                  response.referenceNumber,
+                  function (params) {
+                    callApi('post', `${__globalUrl["url"]}TransactionLogs/UpdateTransactionStatus`, {
+                        referenceNumber: response.referenceNumber,
+                      }).then(res => {
+                        if (res.data["result"]["success"] == true) {
+                          window.ReactNativeWebView.postMessage(
+                            response.referenceNumber,
+                          );
+                        } else {
+                          window.ReactNativeWebView.postMessage({
+                            success: false,
+                            referenceNumber: null,
+                          });
+                        }
+                      })
+                    
+                      // function (statusData) {
+                      //   if (statusData["result"]["success"] == true) {
+                      //     window.ReactNativeWebView.postMessage(
+                      //       response.referenceNumber,
+                      //     );
+                      //   } else {
+                      //     window.ReactNativeWebView.postMessage({
+                      //       success: false,
+                      //       referenceNumber: null,
+                      //     });
+                      //   }
+                    //   // },
+                    // );
+                  },
+                  response.email,
+                  response.phoneNumber,
+                );
+              }, 2000);
+            } else {
+              window.ReactNativeWebView.postMessage({
+                success: false,
+                referenceNumber: null,
+              });
+            }
+
+
+          
+        });
+
+        console.log("myData", myData);
+        $.post(
+          `${__globalUrl["url"]}TransactionLogs/RequestTransaction`,
+          request,
+          function (data, status) {
+            if (!status) {
+              window.ReactNativeWebView.postMessage({
+                success: false,
+                referenceNumber: null,
+              });
+            }
+            let response = data.result;
+            if (response.success == 1) {
+              setTimeout(() => {
+                showCheckoutPopup(
+                  response.apiKey,
+                  response.amount,
+                  response.generated,
+                  response.referenceNumber,
+                  function (params) {
+                    $.post(
+                      `${__globalUrl["url"]}TransactionLogs/UpdateTransactionStatus`,
+                      {
+                        referenceNumber: response.referenceNumber,
+                      },
+                      function (statusData) {
+                        if (statusData["result"]["success"] == true) {
+                          window.ReactNativeWebView.postMessage(
+                            response.referenceNumber,
+                          );
+                        } else {
+                          window.ReactNativeWebView.postMessage({
+                            success: false,
+                            referenceNumber: null,
+                          });
+                        }
+                      },
+                    );
+                  },
+                  response.email,
+                  response.phoneNumber,
+                );
+              }, 2000);
+            } else {
+              window.ReactNativeWebView.postMessage({
+                success: false,
+                referenceNumber: null,
+              });
+            }
+          },
+        );
+      });
+    </script>
+  </head>
+
+  <body></body>
+</html>
