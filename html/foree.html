@@ -177,57 +177,57 @@
           
         });
 
-        console.log("myData", myData);
-        $.post(
-          `${__globalUrl["url"]}TransactionLogs/RequestTransaction`,
-          request,
-          function (data, status) {
-            if (!status) {
-              window.ReactNativeWebView.postMessage({
-                success: false,
-                referenceNumber: null,
-              });
-            }
-            let response = data.result;
-            if (response.success == 1) {
-              setTimeout(() => {
-                showCheckoutPopup(
-                  response.apiKey,
-                  response.amount,
-                  response.generated,
-                  response.referenceNumber,
-                  function (params) {
-                    $.post(
-                      `${__globalUrl["url"]}TransactionLogs/UpdateTransactionStatus`,
-                      {
-                        referenceNumber: response.referenceNumber,
-                      },
-                      function (statusData) {
-                        if (statusData["result"]["success"] == true) {
-                          window.ReactNativeWebView.postMessage(
-                            response.referenceNumber,
-                          );
-                        } else {
-                          window.ReactNativeWebView.postMessage({
-                            success: false,
-                            referenceNumber: null,
-                          });
-                        }
-                      },
-                    );
-                  },
-                  response.email,
-                  response.phoneNumber,
-                );
-              }, 2000);
-            } else {
-              window.ReactNativeWebView.postMessage({
-                success: false,
-                referenceNumber: null,
-              });
-            }
-          },
-        );
+        // console.log("myData", myData);
+        // $.post(
+        //   `${__globalUrl["url"]}TransactionLogs/RequestTransaction`,
+        //   request,
+        //   function (data, status) {
+        //     if (!status) {
+        //       window.ReactNativeWebView.postMessage({
+        //         success: false,
+        //         referenceNumber: null,
+        //       });
+        //     }
+        //     let response = data.result;
+        //     if (response.success == 1) {
+        //       setTimeout(() => {
+        //         showCheckoutPopup(
+        //           response.apiKey,
+        //           response.amount,
+        //           response.generated,
+        //           response.referenceNumber,
+        //           function (params) {
+        //             $.post(
+        //               `${__globalUrl["url"]}TransactionLogs/UpdateTransactionStatus`,
+        //               {
+        //                 referenceNumber: response.referenceNumber,
+        //               },
+        //               function (statusData) {
+        //                 if (statusData["result"]["success"] == true) {
+        //                   window.ReactNativeWebView.postMessage(
+        //                     response.referenceNumber,
+        //                   );
+        //                 } else {
+        //                   window.ReactNativeWebView.postMessage({
+        //                     success: false,
+        //                     referenceNumber: null,
+        //                   });
+        //                 }
+        //               },
+        //             );
+        //           },
+        //           response.email,
+        //           response.phoneNumber,
+        //         );
+        //       }, 2000);
+        //     } else {
+        //       window.ReactNativeWebView.postMessage({
+        //         success: false,
+        //         referenceNumber: null,
+        //       });
+        //     }
+        //   },
+        // );
       });
     </script>
   </head>
