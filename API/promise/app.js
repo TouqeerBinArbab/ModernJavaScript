@@ -30,7 +30,7 @@ function createPost(body) {
       posts.push(body);
       const error = true;
       if (!error) {
-        resolve();
+        resolve();//
       } else {
         reject(console.log("Error! SOmething went wrong!"));
       }
@@ -49,5 +49,7 @@ function getPost() {
 }
 
 createPost({ title: "post three", body: "body for post three" })
-  .then(getPost)
+  .then(getPost).catch(err =>{
+    console.log("error", err)
+  })
   

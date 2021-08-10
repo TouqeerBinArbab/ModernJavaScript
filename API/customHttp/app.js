@@ -15,14 +15,15 @@ const http = new easyHttp();
 
 
 http.get(
-  "https://jsonplaceholder.typicode.com/posts/3",
-  function (err, response) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(response);
-    }
-  },
+  "https://jsonplaceholder.typicode.com/posts",
+function(err, posts){
+  if(err){
+    console.log(err)
+  } else {
+    console.log(posts)
+  }
+  
+}
 );
 
 // Create Data 
