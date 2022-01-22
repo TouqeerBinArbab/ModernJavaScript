@@ -9,7 +9,7 @@ function Person(name, dob) {
   //calculateAge(dob)
 }
 
-let person = new Person("TOuqeer", "12-25-1995");
+let person = new Person("Touqeer", "12-25-1995");
 let person2 = new Person("Abdul Jabbar", "03-12-1996");
 
 console.log(person.calculateAge());
